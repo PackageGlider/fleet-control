@@ -62,12 +62,17 @@ Fleet Control provides a unified dashboard for monitoring multiple drones in rea
 
 ### Building
 ```bash
-./gradlew assembleDebug
+make build
 ```
 
 ### Installing
 ```bash
-./gradlew installDebug
+make install
+```
+
+### Development Workflow
+```bash
+make dev  # Clean, build, and install in one command
 ```
 
 ## Project Status
