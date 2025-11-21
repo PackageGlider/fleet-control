@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> {
-                // TODO: Open settings
+                com.jedsy.fleetcontrol.ui.SettingsDialog().show(supportFragmentManager, "settings")
                 true
             }
             R.id.action_refresh -> {
@@ -76,5 +76,9 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    
+    fun refreshData() {
+        viewModel.refresh()
     }
 }

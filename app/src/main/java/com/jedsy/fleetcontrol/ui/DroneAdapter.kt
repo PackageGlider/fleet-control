@@ -1,5 +1,6 @@
 package com.jedsy.fleetcontrol.ui
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ class DroneAdapter(private var drones: List<DroneStatus>) :
     
     class DroneViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val deviceName: TextView = view.findViewById(R.id.deviceName)
-        val deviceId: TextView = view.findViewById(R.id.deviceId)
         val status: TextView = view.findViewById(R.id.status)
         val lastSeen: TextView = view.findViewById(R.id.lastSeen)
         val batteryLevel: TextView = view.findViewById(R.id.batteryLevel)
@@ -32,8 +32,17 @@ class DroneAdapter(private var drones: List<DroneStatus>) :
         val drone = drones[position]
         
         holder.deviceName.text = drone.deviceName ?: "Unknown Drone"
-        holder.deviceId.text = drone.deviceId ?: drone.endpointId
         holder.ipAddress.text = drone.ipAddress
+        
+        // Click listener to open detail view
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, DroneDetailActivity::class.java).apply {
+                putExtra(DroneDetailActivity.EXTRA_DEVICE_NAME, drone.deviceName ?: "Unknown Drone")
+                putExtra(DroneDetailActivity.EXTRA_DEVICE_ID, drone.deviceId ?: "")
+            }
+            context.startActivity(intent)
+        }
         
         // Status
         val isOnline = isOnline(drone.lastSeen)
@@ -66,9 +75,11 @@ class DroneAdapter(private var drones: List<DroneStatus>) :
     
     private fun isOnline(lastSeenStr: String): Boolean {
         return try {
+            // Handle timestamps with microseconds: 2025-11-21T13:12:05.881018Z
+            val cleanTimestamp = lastSeenStr.substringBefore('.') + "Z"
             val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
             format.timeZone = TimeZone.getTimeZone("UTC")
-            val lastSeen = format.parse(lastSeenStr) ?: return false
+            val lastSeen = format.parse(cleanTimestamp) ?: return false
             val now = Date()
             val diffSeconds = (now.time - lastSeen.time) / 1000
             diffSeconds < 60 // Online if seen within last 60 seconds
@@ -79,9 +90,11 @@ class DroneAdapter(private var drones: List<DroneStatus>) :
     
     private fun formatLastSeen(lastSeenStr: String): String {
         return try {
+            // Handle timestamps with microseconds: 2025-11-21T13:12:05.881018Z
+            val cleanTimestamp = lastSeenStr.substringBefore('.') + "Z"
             val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
             format.timeZone = TimeZone.getTimeZone("UTC")
-            val lastSeen = format.parse(lastSeenStr) ?: return lastSeenStr
+            val lastSeen = format.parse(cleanTimestamp) ?: return lastSeenStr
             val now = Date()
             val diffSeconds = (now.time - lastSeen.time) / 1000
             

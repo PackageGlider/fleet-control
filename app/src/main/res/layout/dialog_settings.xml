@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Backend Environment"
+        android:textSize="16sp"
+        android:textColor="?android:attr/textColorPrimary"
+        android:layout_marginBottom="16dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupEnvironment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioDev"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Development (ping.uphi.cc)"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/radioProd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Production (ping.uphi.ch)"
+            android:padding="12dp" />
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚠️ Changing environment will reload drone data"
+        android:textSize="12sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

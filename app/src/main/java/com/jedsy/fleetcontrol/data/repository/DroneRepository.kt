@@ -27,8 +27,16 @@ class DroneRepository {
                     it.deviceType?.lowercase() == "drone" 
                 }
                 
+                // Group by device_id and keep only one entry per device
+                // Prefer the endpoint with most recent last_seen
+                val uniqueDrones = drones
+                    .groupBy { it.deviceId }
+                    .mapNotNull { (_, endpoints) ->
+                        endpoints.maxByOrNull { it.lastSeen }
+                    }
+                
                 // Sort: online first, then by last_seen (most recent first)
-                val sorted = drones.sortedWith(
+                val sorted = uniqueDrones.sortedWith(
                     compareByDescending<DroneStatus> { isOnline(it.lastSeen) }
                         .thenByDescending { it.lastSeen }
                 )
@@ -47,9 +55,11 @@ class DroneRepository {
      */
     private fun isOnline(lastSeenStr: String): Boolean {
         return try {
+            // Handle timestamps with microseconds: 2025-11-21T13:12:05.881018Z
+            val cleanTimestamp = lastSeenStr.substringBefore('.') + "Z"
             val format = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
             format.timeZone = java.util.TimeZone.getTimeZone("UTC")
-            val lastSeen = format.parse(lastSeenStr) ?: return false
+            val lastSeen = format.parse(cleanTimestamp) ?: return false
             val now = java.util.Date()
             val diffSeconds = (now.time - lastSeen.time) / 1000
             diffSeconds < 60
